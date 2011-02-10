@@ -1,0 +1,106 @@
+/* Global styles */
+body, html {margin:0;padding:0;}
+body {font-family:sans-serif;font-size:12px;}
+h1, h2, h3, h4, h5, h6, form, fieldset, pre, code, p, div, input, textarea, button {margin:0;padding:0;}
+img, fieldset {border:0;margin:0;}
+noscript {font-size:16px;text-align:center;color:red;font-weight:bold;}
+em {font-style: italic;}
+strong {font-weight: bold;}
+table {border-collapse:collapse;font:inherit;}
+div:focus {outline:0;}
+nav, header, footer, section, article {display:block;}
+.clear {clear:both;}
+.center {text-align:center;}
+.left {text-align:left;}
+.right {text-align:right;}
+.separator {margin:5px 0 0 0;}
+.mtop5 {margin-top:5px;}
+.mtop10 {margin-top:10px;}
+.mtop20 {margin-top:20px;}
+.bold {font-weight:bold;}
+.fleft {float:left;}
+.fright {float:right;}
+.vtop {vertical-align:top;}
+.vmiddle {vertical-align:middle;}
+.smaller {font-size:75%;}
+.bigger {font-size:125%;}
+.nowrap {white-space:nowrap;}
+ul.plain, ol.plain {list-style-type:none;margin:0;padding:0;}
+ul.plain li, ol.plain li {margin:0;padding:0;}
+.clearfix:after {
+	content: '.';
+	display: block;
+	height: 0;
+	font-size: 0;
+	clear: both;
+	visibility: hidden;
+}
+.clearfix {display: inline-block;}
+/* \*/
+.clearfix {display: block;}
+/* */
+
+/*=========================================================*/
+
+/* templates */
+.error, .exception, .info, .warning {
+	margin:20px 0 0 0;
+	padding:5px;
+	font-size:1.1em;
+	text-align:center;
+}
+.error, .exception {
+	color:red;
+	font-weight:bold;
+}
+
+/* form styles */
+input, textarea, select, button {
+	font-size:12px;
+}
+.form-field-error-label {
+	color:red;
+	font-weight:bold;
+	display:block;
+}
+.form-field-error {
+	border:1px solid red;
+}
+
+table.form {
+	width:100%;
+}
+table.form th {
+	text-align:right;
+	padding:3px 6px;
+	vertical-align: top;
+}
+table.form td {
+	padding:3px 6px;
+	vertical-align: top;
+}
+table.form input[type=text], table.form textarea, table.form select, table.form input[type=password] {
+	width:95%;
+	box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+}
+
+
+/* definition lists */
+dl {
+	margin:0;
+	padding:0;
+	overflow:auto;
+}
+dt {
+	width:30%;
+	float:left;
+	clear:left;
+	text-align:right;
+	padding:2px;
+}
+dd {
+	padding:2px;
+	overflow:hidden;
+}

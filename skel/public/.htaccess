@@ -1,0 +1,54 @@
+#php_flag register_globals off
+#php_flag display_errors on
+#php_flag magic_quotes_gpc off
+#php_flag mbstring.encoding_translation on
+php_flag mbstring.internal_encoding 'UTF-8'
+php_flag mbstring.func_overload on
+
+AddDefaultCharset UTF-8
+#AddHandler application/x-httpd-php .css
+AddType text/javascript .js
+AddType text/css .css
+AddType text/x-component .htc
+
+<IfModule mod_rewrite.c>
+	RewriteBase /
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^.*$ index.php [L]
+</IfModule>
+
+<IfModule mod_deflate.c>
+	SetOutputFilter DEFLATE
+	AddOutputFilterByType DEFLATE text/plain text/html text/xml application/xml application/xhtml+xml application/rss+xml
+	AddOutputFilterByType DEFLATE text/css text/javascript application/javascript application/x-javascript
+	BrowserMatch ^Mozilla/4 gzip-only-text/html
+	BrowserMatch ^Mozilla/4\.0[678] no-gzip
+	BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+
+########################### CACHING ###########################
+Header unset Pragma
+
+<IfModule mod_expires.c>
+	ExpiresActive On
+	ExpiresDefault A0
+
+	# 7 days
+	ExpiresByType text/javascript A604800
+	ExpiresByType text/css A604800
+
+	# 1 month
+	<FilesMatch "\.(flv|swf|ico|pdf|avi|mov|doc|mp3|jpg|jpeg|png|gif)$">
+		ExpiresDefault A2592000
+		Header unset Last-Modified
+		Header merge Cache-Control "public, must-revalidate"
+	</FilesMatch>
+
+	<FilesMatch "\.(js|css)$">
+		FileETag None
+		Header unset ETag
+		Header merge Cache-Control "public, must-revalidate"
+	</FilesMatch>
+</IfModule>
