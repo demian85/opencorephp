@@ -1,9 +1,9 @@
-
 PHP 5.3+ Lightweight MVC fully object oriented framework
 =============
 
 [Documentación en español](https://docs.google.com/document/pub?id=1JWwllcZs-qsHTRpccbwL04dhrSipX6ypAfTYfZB93DE)
 
+Framework aims to be simple with the minimum required tools.
 Source code is 99% documented in english but as you can see, there is no generated php-doc. I'll try to upload it later.
 Original documentation is in Spanish. Below is a simplified english translation. I hope you can understand the basics :)
 
