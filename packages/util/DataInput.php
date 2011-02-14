@@ -34,6 +34,7 @@ class DataInput implements Iterator, ArrayAccess
 	 * @throws InvalidArgumentException if $type or $filter is invalid
 	 */
 	protected function _getValue($type, $value, $filter = null) {
+		if ($value === null) return null;
 		switch ($type) {
 			case 'string':
 				$value = (string)$value;
