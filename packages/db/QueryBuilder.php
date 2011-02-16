@@ -8,7 +8,7 @@ import("db.DB");
  * Class for creating sql statements
  *
  * @package db
- * @author Demián Andrés Rodriguez (demian85@gmail.com)
+ * @author ZedPlan Team (opencorephp@zedplan.com)
  */
 class QueryBuilder {
 
@@ -30,14 +30,8 @@ class QueryBuilder {
 			$index = $this->_bindIndex+1;
 			throw new SQLException("Invalid number of supplied parameters. Missing value for placeholder #{$index}");
 		}
-		$value = $this->_php2Sql($this->_bindValues[$this->_bindIndex++]);
+		$value = $this->php2Sql($this->_bindValues[$this->_bindIndex++]);
 		return $value;
-	}
-
-	private function _php2Sql($value) {
-		if (is_string($value)) return "'" . $this->_conn->quote($value) . "'";
-		else if (is_array($value)) return '(' . implode(',', array_map(array($this, '_php2Sql'), $value)) . ')';
-		else return var_export($value, true);
 	}
 
 	/**
@@ -54,7 +48,7 @@ class QueryBuilder {
 		$sql = ($type == 'INSERT' || $type == 'REPLACE') ? "$type INTO $table SET " : "UPDATE $table SET ";
 		$parts = array();
 		foreach ($fields as $field => $value) {
-			$parts[] = $fieldPrefix . $field . " = " . $this->_php2Sql($value);
+			$parts[] = $fieldPrefix . $field . " = " . $this->php2Sql($value);
 		}
 		$sql .= implode(", ", $parts);
 		if ($where) $sql .= " WHERE $where";
@@ -88,9 +82,25 @@ class QueryBuilder {
 	}
 
 	/**
+	 * Convert php value to sql value according data type and connection.
+	 * Strings are escaped and quoted and arrays are converted to a comma separated list between parenthesis.
+	 * Other types are left untouched.
+	 *
+	 * @param mixed $value
+	 * @return mixed
+	 * @throws SQLException
+	 */
+	public function php2Sql($value) {
+		if (is_string($value)) return "'" . $this->_conn->quote($value) . "'";
+		else if (is_array($value)) return '(' . implode(',', array_map(array($this, 'php2Sql'), $value)) . ')';
+		else return var_export($value, true);
+	}
+
+	/**
 	 * Replace questions marks with the specified values. Order is preserved.
 	 * Values are mapped from php to mysql.
 	 * Strings are automatically escaped and arrays are converted to a comma separated list between parenthesis.
+	 * WARNING: Empty arrays still returns "()"
 	 *
 	 * @param string $sql
 	 * @param array $values
