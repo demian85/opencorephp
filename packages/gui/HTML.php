@@ -181,6 +181,7 @@ class HTML
 		$html = '<ul';
 		if ($id) $html .= ' id="'.$id.'"';
 		if ($class) $html .= ' class="'.$class.'"';
+		$html .= '>';
 		foreach ($items as $link => $text) {
 			$html .= '<li><a href="'.$link.'">'.$text.'</a></li>';
 		}
