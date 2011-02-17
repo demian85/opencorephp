@@ -22,11 +22,11 @@ class URL
 	 */
 	public static function toQueryParams(array $params)
 	{
-		$qs = '';
+		$qs = array();
 		foreach ($params as $k => $v) {
-			$qs .= "$k=" . urlencode($v);
+			$qs[] = "$k=" . urlencode($v);
 		}
-		return $qs;
+		return implode('&', $qs);
 	}
 
 	/**

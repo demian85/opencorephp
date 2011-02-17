@@ -107,7 +107,7 @@ abstract class ViewFactory
 	public static function notFoundView()
 	{
 		$config = Config::getInstance();
-		header("HTTP/1.0 404 Not Found");
+		header("HTTP/1.0 404 Not Found", true, 404);
 		$template404 = $config->get('views.tpl_404');
 		if ($template404) {
 			echo new View($template404);
