@@ -43,7 +43,7 @@ class PageScroller
 	* @param boolean $showNextPrev Show legends "Next" and "Previous" instead of ">" and "<" arrows.
 	* @return string
 	*/
-	public static function createScroller($pageCount, $currentPage, $url, $scrollerRange = 6, $scrollerStyle = 'page-scroller', $showNextPrev = true)
+	public static function createScroller($pageCount, $currentPage, $url = null, $scrollerRange = 6, $scrollerStyle = 'page-scroller', $showNextPrev = true)
 	{
 		$pageCount = intval($pageCount);
 		$currentPage = intval($currentPage);
@@ -52,6 +52,14 @@ class PageScroller
 		
 		$minRange = ($currentPage - $scrollerRange < 1) ? 1 : $currentPage - $scrollerRange;
 		$maxRange = ($currentPage + $scrollerRange > $pageCount) ? $pageCount : $currentPage + $scrollerRange;
+
+		if (!$url) {
+			$_get = $_GET;
+			unset($_get['p']);
+			$_qs = URL::toQueryParams($_get);
+			$_qs .= empty($_get) ? 'p={%PAGE}' : '&p={%PAGE}';
+			$url = URL::fromParams(Request::getInstance()->getParams(), $_qs);
+		}
 		
 		if ($pageCount > 1 && $currentPage <= $pageCount) {
 			$out = '<ul class="'.$scrollerStyle.'">';
