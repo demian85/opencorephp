@@ -30,6 +30,20 @@ class URL
 	}
 
 	/**
+	 * Create relative URL based on the current one and merge or replace query params.
+	 * @param array $params
+	 * @param boolean $merge Merge or replace GET parameters
+	 * @return URL
+	 */
+	public static function fromQueryParams(array $params, $merge = true)
+	{
+		$_pos = strrpos($_SERVER['REQUEST_URI'], '?');
+		$path = ($_pos === false) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $_pos);
+		$path .= '?' . self::toQueryParams($merge ? array_merge($_GET, $params) : $params);
+		return new self($path);
+	}
+
+	/**
 	 * Create absolute URL from parts.
 	 * If protocol or domain are omitted, the default values will be used.
 	 *
