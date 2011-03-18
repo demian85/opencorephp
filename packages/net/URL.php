@@ -39,7 +39,7 @@ class URL
 	{
 		$_pos = strrpos($_SERVER['REQUEST_URI'], '?');
 		$path = ($_pos === false) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $_pos);
-		$path .= '?' . self::toQueryParams($merge ? array_merge($_GET, $params) : $params);
+		$path .= '?' . http_build_query($merge ? array_merge($_GET, $params) : $params);
 		return new self($path);
 	}
 
