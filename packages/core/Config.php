@@ -33,8 +33,7 @@ class Config extends Properties
 	/**
 	 * Determine the config directory.
 	 * Searches inside the default config directory for the first folder that matches the current domain (totally or partially)
-	 * If no folder matches the domain, the default directory is used.
-	 * If any core file is missing inside a specific domain folder, the base directory is used as fallback.
+	 * If a folder is found, the values inside that configuration files will replace the ones inside the default config directory.
 	 *
 	 * @return string
 	 */
@@ -64,7 +63,7 @@ class Config extends Properties
 
 	/**
 	 * Constructor. Loads config from files and initializes core application settings.
-	 * 
+	 *
 	 * @throws FileNotFoundException if provided configuration directory is invalid or inaccessible.
 	 * @throws IOException if an error occurred while loading configuration files.
 	 */
@@ -75,10 +74,10 @@ class Config extends Properties
 
 		$this->_loadConfig();
 	}
-	
+
 	/**
 	 * Returns an instance of this class.
-	 * 
+	 *
 	 * @return Config
 	 * @throws FileNotFoundException if provided configuration directory is invalid or inaccessible.
 	 * @throws IOException if an error occurred while loading configuration files.
@@ -88,7 +87,7 @@ class Config extends Properties
 		if (self::$instance == null) self::$instance = new self();
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Initialize core config.
 	 * @return void
@@ -130,14 +129,14 @@ class Config extends Properties
 		if ($this->get('core.autoload')) {
 			spl_autoload_register(array('Loader', 'loadClass'));
 		}
-		
+
 		// set locale
-		if (!Request::getInstance()->isWebRequest() 
+		if (!Request::getInstance()->isWebRequest()
 				|| Request::getInstance()->isWebRequest() && !$this->get('routes.language_redirect')) {
 			$this->setLocale();
 		}
 	}
-	
+
 	/**
 	 * Set locale. If NULL it will be autodetected by calling method Client::getLocaleInfo()
 	 * If {routes.language_redirect} is enabled, this method should be called after Router instantiation in order to detect requested language!
@@ -146,7 +145,7 @@ class Config extends Properties
 	 * (string)	app.locale : the detected valid system locale
 	 * (string)	app.country : the country code
 	 * (string)	app.language : the language code
-	 * 
+	 *
 	 * @param string $locale The locale identifier.
 	 * @param boolean $setSystemLocale Calls setlocale() for category LC_ALL and tries different combinations of $locale until success.
 	 * @return boolean TRUE on success or FALSE is setlocale() failed
@@ -168,9 +167,9 @@ class Config extends Properties
 				$locale = $localeInfo['locale'];
 			}
 		}
-		
+
 		$parts = Lang::parseLocale($locale);
-		
+
 		$this->set('app.locale', $locale);
 		$this->set('app.country', $parts['country']);
 		$this->set('app.language', $parts['language']);

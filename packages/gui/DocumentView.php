@@ -232,7 +232,7 @@ class DocumentView extends View
 	 * @return array
 	 */
 	protected function _checkDefaultDir(array $files, $type) {
-		$new = array();
+		$new = array();		
 		foreach ($files as $src => $value) {
 			if (strpos($src, '@') === 0) {
 				$src = $this->_config["views.default_{$type}_dir"] . '/' . substr($src, 1) . ".{$type}";
@@ -411,8 +411,34 @@ HTML;
 		foreach ((array)$src as $file) {
 			self::$_globalJS[$file] = array(
 				'type'		=> $type,
-				'inline'	=> $inline
+				'inline'	=> $inline,
+				'async'		=> null,
+				'defer'		=> null,
+				'onload'	=> null
 			);
+		}
+	}
+	
+	/**
+	 * Add global asynchronous Javascript file(s) that will be included in all views.
+	 * Sets the "async" attribute for the generated script.
+	 *
+	 * @param string|string[] $src A single file or an array of files.
+	 * @param string $onload Javascript code to be executed on script load.
+	 * @param boolean $defer Sets the "defer" attribute. Script will be executed after the page has loaded.
+	 * @param string $type
+	 * @return void
+	 */
+	public static function addGlobalAsyncJS($src, $onload = null, $defer = false, $type = 'text/javascript')
+	{
+		foreach ((array)$src as $file) {
+			self::$_globalJS[$file] = array(
+				'type'		=> $type,
+				'inline'	=> false,
+				'async'		=> true,
+				'defer'		=> $defer,
+				'onload'	=> $onload
+			);			
 		}
 	}
 
@@ -689,10 +715,16 @@ HTML;
 			// single request
 			$html .= HTML::script($this->_getStaticLoader('js', array_keys($externalJS))) . "\n";
 		}
-		else {
+		else {			
 			foreach ($externalJS as $src => $attrs) {
-				$_src = ($this->_config['views.static_loader'] == 2 && $this->_isStatic($src)) ? HTML::src($src) : $src;
-				$html .= HTML::script($_src, $attrs['type']) . "\n";
+				$_src = ($this->_config['views.static_loader'] == 2 && $this->_isStatic($src)) ? HTML::src($src) : $src;				
+				$html .= HTML::element('script', array(
+					'src' => $_src, 
+					'type' => $attrs['type'], 
+					'async' => $attrs['async'], 
+					'defer' => $attrs['defer'], 
+					'onload' => $attrs['onload']
+				), '') . "\n";
 			}
 		}
 
@@ -1089,7 +1121,34 @@ HTML;
 		foreach ((array)$src as $file) {
 			$this->_js[$file] = array(
 				'type'		=> $type,
-				'inline'	=> $inline
+				'inline'	=> $inline,
+				'async'		=> null,
+				'defer'		=> null,
+				'onload'	=> null
+			);
+		}
+	}
+	
+	/**
+	 * Add external Javascript file or embed its code inside script tags.
+	 * Files starting with "@" will be prepended with the default js directory path.
+	 * Sets the "async" attribute for the generated script.
+	 *
+	 * @param string|string[] $src A single file or an array of files.
+	 * @param string $onload Javascript code to be executed on script load.
+	 * @param boolean $defer Sets the "defer" attribute. Script will be executed after the page has loaded.
+	 * @param string $type
+	 * @return void
+	 */
+	public function addAsyncJS($src, $onload = null, $defer = false, $type = 'text/javascript')
+	{
+		foreach ((array)$src as $file) {
+			$this->_js[$file] = array(
+				'type'		=> $type,
+				'inline'	=> false,
+				'async'		=> true,
+				'defer'		=> $defer,
+				'onload'	=> $onload
 			);
 		}
 	}
