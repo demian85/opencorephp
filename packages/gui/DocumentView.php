@@ -1167,7 +1167,10 @@ HTML;
 		foreach ((array)$src as $file) {
 			$data[$file] = array(
 				'type'		=> $type,
-				'inline'	=> $inline
+				'inline'	=> $inline,
+				'async'		=> null,
+				'defer'		=> null,
+				'onload'	=> null
 			);
 		}
 		$this->_js = array_merge($data, $this->_js);
