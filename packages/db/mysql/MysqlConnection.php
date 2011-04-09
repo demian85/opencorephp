@@ -35,7 +35,7 @@ class MysqlConnection implements Connection
 			$this->close();
 		} catch (Exception $ex) { }
 	}
-	
+
 	public function connect($host, $user, $pass, $dbname, $port = 3306)
 	{
 		$this->conn = @mysqli_connect($host, $user, $pass, $dbname, $port);
@@ -43,21 +43,21 @@ class MysqlConnection implements Connection
 			throw new SQLException("Cannot connect to host '$host': ".mysqli_connect_error(), mysqli_connect_errno());
 		}
 	}
-	
+
 	public function selectDb($dbname)
 	{
 		if (!@$this->conn->select_db($dbname)) {
 			throw new SQLException("Unable to select database '$dbname': ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function close()
 	{
 		if (!@$this->conn->close()) {
 			throw new SQLException("Unable to close connection: ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function query($sql /* [array $values], [$rowsPerPage = 0], [$currentPage = 1] */)
 	{
 		$args = func_get_args();
@@ -75,37 +75,50 @@ class MysqlConnection implements Connection
 		if (!is_int($rowsPerPage) || $rowsPerPage < 0) {
 			throw new InvalidArgumentException("Rows per page must be an integer >= 0.");
 		}
-		
+
 		if ($rowsPerPage > 0) {
 			if (stripos($sql, "SQL_CALC_FOUND_ROWS") === false) {
-				$sql = preg_replace("#^\\s*SELECT(.*?)#i", "SELECT SQL_CALC_FOUND_ROWS $1", $sql);
+				$sql = preg_replace("#^SELECT(.*?)#i", "SELECT SQL_CALC_FOUND_ROWS $1", trim($sql));
 			}
+			preg_match('#LIMIT\s+(\d+)$#i', $sql, $limitMatch);
 			if ($currentPage < 1) $currentPage = 1;
+
 			$recStart = $currentPage * $rowsPerPage - $rowsPerPage;
-			$recEnd = $rowsPerPage;
-			$sql .= " LIMIT $recStart, $recEnd";
+
+			if ($limitMatch) {
+				$nativeLimit = (int)$limitMatch[1];
+				$maxLimit = $recStart + $rowsPerPage;
+				if ($nativeLimit <= $recStart) $recEnd = 0;
+				else if ($nativeLimit <= $maxLimit) $recEnd = min($rowsPerPage, $nativeLimit - $recStart);
+				else $recEnd = $rowsPerPage;
+				$limit = "$recStart, $recEnd";
+				$sql = preg_replace('#LIMIT\s+(\d+)$#i', "LIMIT $limit", $sql);
+			}
+			else {
+				$recEnd = $rowsPerPage;
+				$sql .= " LIMIT $recStart, $recEnd";
+			}
 		}
-		
+
 		$result = @$this->conn->query($sql);
 		if (!is_object($result)) {
 			$error = !$this->conn->errno ? "Provided statement must be a SELECT, SHOW, DESCRIBE or EXPLAIN." : "Error executing query: ".$this->conn->error;
 			throw new SQLException($error, $this->conn->errno, $sql);
 		}
-		
+
 		if ($rowsPerPage > 0) {
-			$tempResult = $this->query("SELECT FOUND_ROWS()");
-			$tempData = $tempResult->fetch(ResultSet::FETCH_NUM);
-			$fullRowCount = (int)$tempData[0];
+			if ($limitMatch) $fullRowCount = $nativeLimit;
+			else $fullRowCount = $this->query("SELECT FOUND_ROWS() as fr")->fetchObject()->fr;
 			$pageCount = (int)ceil($fullRowCount / $rowsPerPage);
 		}
 		else {
 			$fullRowCount = -1;
 			$pageCount = 0;
 		}
-		
+
 		return new MysqlResultSet($result, null, $pageCount, $fullRowCount);
 	}
-	
+
 	public function exec($sql, array $values = array())
 	{
 		if (!empty($values)) {
@@ -117,7 +130,7 @@ class MysqlConnection implements Connection
 		}
 		return $this->conn->affected_rows;
 	}
-	
+
 	public function prepare($sql)
 	{
 		$stmt = @$this->conn->prepare($sql);
@@ -126,43 +139,43 @@ class MysqlConnection implements Connection
 		}
 		return new MysqlStatement($stmt);
 	}
-	
+
 	public function beginTransaction()
 	{
 		if (!$this->conn->autocommit(false)) {
 			throw new SQLException("Unable to begin transaction: ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function commit()
 	{
 		if (!$this->conn->commit()) {
 			throw new SQLException("Cannot commit current transaction: ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function rollBack()
 	{
 		if (!$this->conn->rollback()) {
 			throw new SQLException("Cannot roll back current transaction: ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function lastInsertId($name = null)
 	{
 		return (int)$this->conn->insert_id;
 	}
-	
+
 	public function setAttribute($attr, $value)
 	{
 		throw new RuntimeException("Method not implemented yet!");
 	}
-	
+
 	public function getAttribute($attr)
 	{
 		throw new RuntimeException("Method not implemented yet!");
 	}
-	
+
 	public function quote($input, $characters = '')
 	{
 		if (is_array($input)) {
@@ -174,17 +187,17 @@ class MysqlConnection implements Connection
 				$value = str_replace($characters[$i], "\\{$characters[$i]}", $value);
 			}
 		}
-		
+
 		return $value;
 	}
-	
+
 	public function setCharset($charset)
 	{
 		if (!$this->conn->set_charset($charset)) {
 			throw new SQLException("Cannot set character set: ".$this->conn->error, $this->conn->errno);
 		}
 	}
-	
+
 	public function listTables()
 	{
 		$result = $this->query("SHOW TABLES");
