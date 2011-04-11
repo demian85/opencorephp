@@ -107,8 +107,8 @@ class MysqlConnection implements Connection
 		}
 
 		if ($rowsPerPage > 0) {
-			if ($limitMatch) $fullRowCount = $nativeLimit;
-			else $fullRowCount = $this->query("SELECT FOUND_ROWS() as fr")->fetchObject()->fr;
+			$fullRowCount = $this->query("SELECT FOUND_ROWS() as fr")->fetchObject()->fr;
+			if ($limitMatch) $fullRowCount = min($nativeLimit, $fullRowCount);
 			$pageCount = (int)ceil($fullRowCount / $rowsPerPage);
 		}
 		else {
