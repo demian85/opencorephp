@@ -8,7 +8,7 @@ import("db.DB");
  * Class for creating sql statements
  *
  * @package db
- * @author ZedPlan Team (opencorephp@zedplan.com)
+ * @author Demián Andrés Rodriguez (demian85@gmail.com)
  */
 class QueryBuilder {
 

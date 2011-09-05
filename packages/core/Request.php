@@ -253,6 +253,16 @@ class Request
 		}
 		return $base;
 	}
+	
+	/**
+	 * Get the path part of the URL.
+	 * @return string 
+	 */
+	public function getPath() {
+		$_pos = strrpos($_SERVER['REQUEST_URI'], '?');
+		$path = ($_pos === false) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $_pos);
+		return $path;
+	}
 
 	/**
 	 * Get the subdomain labels from the current URI.
