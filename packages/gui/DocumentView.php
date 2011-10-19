@@ -738,13 +738,7 @@ HTML;
 		else {			
 			foreach ($externalJS as $src => $attrs) {
 				$_src = ($this->_config['views.static_loader'] == 2 && $this->_isStatic($src)) ? HTML::src($src) : $src;				
-				$html .= HTML::element('script', array(
-					'src' => $_src, 
-					'type' => $attrs['type'], 
-					'async' => $attrs['async'], 
-					'defer' => $attrs['defer'], 
-					'onload' => $attrs['onload']
-				), '') . "\n";
+				$html .= HTML::element('script', array_merge(array('src' => $_src), $attrs), '') . "\n";
 			}
 		}
 
