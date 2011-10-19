@@ -397,6 +397,26 @@ HTML;
 		}
 		self::$_footers = array_merge(self::$_footers, (array)$template);
 	}
+	
+	/**
+	 * Add global script element(s) that will be included in all views.
+	 *
+	 * @param string|string[] $src A single file or an array of files.
+	 * @param mixed[] $attrs element attributes.
+	 * @return void
+	 */
+	public static function addGlobalScript($src, $attrs = array())
+	{
+		foreach ((array)$src as $file) {
+			self::$_globalJS[$file] = array_merge(array(
+				'type'		=> 'text/javascript',
+				'inline'	=> false,
+				'async'		=> null,
+				'defer'		=> null,
+				'onload'	=> null
+			), $attrs);
+		}
+	}
 
 	/**
 	 * Add global Javascript file(s) that will be included in all views.
