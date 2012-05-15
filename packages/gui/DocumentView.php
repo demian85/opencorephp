@@ -727,10 +727,27 @@ HTML;
 HTML;
 			}
 			else {
-				$externalJS[$src] = $attrs;
+				
+				if($this->_config['views.static_loader'] == 1){
+					$externalJS[$src] = $attrs;
+				}else{
+					$_src = ($this->_config['views.static_loader'] == 2 && $this->_isStatic($src)) ? HTML::src($src) : $src;				
+					$html .= HTML::element('script', array_merge(array('src' => $_src), $attrs), '') . "\n";
+				}
+				
 			}
 		}
-
+		
+		if (!empty($externalJS) && $this->_config['views.static_loader'] == 1) {
+			// single request
+			$html .= HTML::script($this->_getStaticLoader('js', array_keys($externalJS))) . "\n";
+		}		
+		
+		
+		/************************************************************/
+		/*                     OLD CODE                             */
+		/************************************************************/
+		/*
 		if (!empty($externalJS) && $this->_config['views.static_loader'] == 1) {
 			// single request
 			$html .= HTML::script($this->_getStaticLoader('js', array_keys($externalJS))) . "\n";
@@ -741,6 +758,8 @@ HTML;
 				$html .= HTML::element('script', array_merge(array('src' => $_src), $attrs), '') . "\n";
 			}
 		}
+		*/
+    	/************************************************************/
 
 		$jsVars = array_merge(self::$_globalJSVars, $this->_jsVars);
 
