@@ -16,7 +16,7 @@ class Response {
 	 * @param mixed $data
 	 * @param string $contentType
 	 */
-	static function json($data = null, $contentType = 'text/javascript') {
+	static function json($data = null, $contentType = 'application/json') {
 		header("Content-Type: $contentType");
 		echo json_encode($data);
 	}
